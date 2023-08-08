@@ -23,12 +23,20 @@ jobs:
       - image: cimg/base:stable
     steps:
       - run: echo 'This is my World'
+      - run: echo 'This is my World' > ~/output.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - output.txt
 
   print_my_name:
     docker:
       - image: cimg/base:stable
     steps:
       - run: echo $KUSH_NAME
+      - attach_workspace:
+          at: ~/
+      - run: cat ~/output.txt 
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
@@ -40,3 +48,5 @@ workflows:
           requires:
             - say-hello
       - print_my_name
+          requires:
+            - print_world
